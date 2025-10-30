@@ -1,0 +1,29 @@
+# Test configuration for supervised training
+model:
+  arch_name: cenet
+  in_channels: 1
+  num_classes: 2
+  img_size: 128
+  learning_rate: 0.001
+  weight_decay: 0.0001
+
+data:
+  train_dir: data/OCTA500_3M/train
+  val_dir: data/OCTA500_3M/val
+  test_dir: data/OCTA500_3M/test
+  crop_size: 128
+  train_bs: 2
+
+trainer:
+  max_epochs: 100
+  accelerator: gpu
+  devices: 1
+  log_every_n_steps: 10
+  check_val_every_n_epoch: 1
+  logger:
+    class_path: lightning.pytorch.loggers.TensorBoardLogger
+    init_args:
+      save_dir: lightning_logs
+      name: experiment
+      version: null
+

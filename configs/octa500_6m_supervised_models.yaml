@@ -1,0 +1,43 @@
+# Test configuration for supervised training
+model:
+  arch_name: cenet
+  in_channels: 1
+  num_classes: 2
+  img_size: 224
+  learning_rate: 0.0002
+
+data:
+  name: octa500_6m
+  train_dir: data/OCTA500_6M/train
+  val_dir: data/OCTA500_6M/val
+  test_dir: data/OCTA500_6M/test
+  crop_size: 224
+  train_bs: 8
+
+trainer:
+  max_epochs: 300
+  accelerator: gpu
+  devices: 1
+  precision: bf16-mixed
+  log_every_n_steps: 50
+  check_val_every_n_epoch: 10
+  accumulate_grad_batches: 2
+  gradient_clip_val: 1.0
+  callbacks:
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        monitor: val/dice
+        mode: max
+        save_last: true
+        verbose: true
+    - class_path: lightning.pytorch.callbacks.StochasticWeightAveraging
+      init_args:
+        swa_lrs: 0.0001
+
+  logger:
+    class_path: lightning.pytorch.loggers.TensorBoardLogger
+    init_args:
+      save_dir: lightning_logs
+      name: experiment
+      version: null
+

@@ -1,0 +1,46 @@
+# Configuration for diffusion models on ROSSA dataset
+model:
+  arch_name: segdiff
+  image_size: 224
+  dim: 32
+  timesteps: 100
+  learning_rate: 0.0002
+  num_classes: 2
+  use_ema: true
+  ema_decay: 0.9999
+  num_ensemble: 1
+
+data:
+  train_manual_dir: data/ROSSA/train_manual
+  train_sam_dir: data/ROSSA/train_sam
+  val_dir: data/ROSSA/val
+  test_dir: data/ROSSA/test
+  crop_size: 224
+  train_bs: 4
+  num_samples_per_image: 8
+  name: rossa
+
+trainer:
+  max_epochs: 400
+  accelerator: gpu
+  devices: [2]
+  precision: 32
+  log_every_n_steps: 50
+  check_val_every_n_epoch: 10
+  accumulate_grad_batches: 2
+  gradient_clip_val: 1.0
+  callbacks:
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        monitor: val/dice
+        mode: max
+        save_last: true
+        verbose: true
+
+  logger:
+    class_path: lightning.pytorch.loggers.TensorBoardLogger
+    init_args:
+      save_dir: lightning_logs
+      name: rossa
+      version: null
+
